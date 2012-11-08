@@ -185,7 +185,7 @@
 	if (ignoreTap) return;
 	
 	if (gesture.state == UIGestureRecognizerStateEnded)
-		[self setOn:!self.on animated:YES];
+		[self setOn:!self.on animated:YES triggeredByEvent:YES];
 }
 
 - (void)toggleDragged:(UIPanGestureRecognizer *)gesture
@@ -230,7 +230,7 @@
 	{
 		// flip the switch to on or off depending on which half it ends at
 		CGFloat toggleCenter = CGRectGetMidX(toggleLayer.frame);
-		[self setOn:(toggleCenter > CGRectGetMidX(self.bounds)) animated:YES];
+		[self setOn:(toggleCenter > CGRectGetMidX(self.bounds)) animated:YES triggeredByEvent:YES];
 	}
     
 	// send off the appropriate actions (not fully tested yet)
@@ -273,6 +273,11 @@
 }
 
 - (void)setOn:(BOOL)newOn animated:(BOOL)animated
+{
+    [self setOn:newOn animated:animated triggeredByEvent:NO];
+}
+
+- (void)setOn:(BOOL)newOn animated:(BOOL)animated triggeredByEvent:(BOOL)triggeredByEvent
 {
 	BOOL previousOn = self.on;
 	on = newOn;
@@ -326,7 +331,7 @@
 			ignoreTap = NO;
             
 			// send the action here so it get's sent at the end of the animations
-			if (previousOn != on)
+			if (triggeredByEvent && previousOn != on)
 				[self sendActionsForControlEvents:UIControlEventValueChanged];
 		}];
         
